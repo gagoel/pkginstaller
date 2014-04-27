@@ -34,8 +34,10 @@ class SetupPackages:
 
     def download(self):
         print('\nDOWNLOADING PACKAGES...')
-        print('Packages configuration dict is {}'.format(
-            self._packages_config_list)
+        
+        logger.debug(
+            'Packages configuration dict is %s',
+            self._packages_config_list
         )
 
         for package_dict in self._packages_config_list:
