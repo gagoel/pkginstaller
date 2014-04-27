@@ -57,8 +57,9 @@ class SetupPackage:
         package_build_default_root = PACKAGE_BUILD_DEFAULT_ROOT,
         package_install_default_root = PACKAGE_INSTALL_DEFAULT_ROOT
     ):
-        print('Package configuration dictionary is {}'.format(
-            package_config_dict)
+        logger.debug(
+            'Package configuration dictionary is %s',
+            package_config_dict
         )
         
         if not 'name' in package_config_dict.keys():
