@@ -38,7 +38,7 @@ class SetupPackages:
             self._packages_config_list)
         )
 
-        for package_id, package_dict in self._packages_config_list.items():
+        for package_dict in self._packages_config_list:
             package_obj = SetupPackage(
                 package_dict,
                 self._packages_cache_default_dir,
@@ -71,7 +71,7 @@ class SetupPackages:
     def extract(self):
         print('\nEXTRACTING PACKAGES...')
 
-        for package_id, package_dict in self._packages_config_list.items():
+        for package_dict in self._packages_config_list:
             package_obj = SetupPackage(
                 package_dict,
                 self._packages_cache_default_dir,
@@ -99,7 +99,7 @@ class SetupPackages:
     def install(self):
         print('\nINSTALLING PACKAGES...\n')
 
-        for package_id, package_dict in self._packages_config_list.items():
+        for package_dict in self._packages_config_list:
             package_obj = SetupPackage(
                 package_dict,
                 self._packages_cache_default_dir,

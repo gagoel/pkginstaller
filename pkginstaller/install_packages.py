@@ -52,12 +52,10 @@ def install_package(
         "configure_cmd" : package_configure_cmd
     }
 
-    pkgs_config_dict = {
-        package_name : pkg_config_dict
-    }    
+    pkgs_config_list = [pkg_config_dict]    
 
     setup_packages = SetupPackages(
-        pkgs_config_dict,
+        pkgs_config_list,
         package_cache_directory,
         package_extract_root_directory,
         package_build_root_directory,
@@ -71,14 +69,14 @@ def install_package(
     return True
 
 def install_packages(
-    packages_configuration_dict,
+    packages_configuration_list,
     packages_cache_default_dir = PACKAGE_CACHE_DEFAULT_DIR,
     packages_extract_default_root = PACKAGE_EXTRACT_DEFAULT_ROOT,
     packages_build_default_root = PACKAGE_BUILD_DEFAULT_ROOT,
     packages_install_default_root = PACKAGE_INSTALL_DEFAULT_ROOT,
 ):
     setup_packages = SetupPackages(
-        packages_configuration_dict,
+        packages_configuration_list,
         packages_cache_default_dir,
         packages_extract_default_root,
         packages_build_default_root,

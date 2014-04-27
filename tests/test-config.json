@@ -1,15 +1,15 @@
 {
-  "packages" : {
-    "python" : {
-      "name" : "python",
-      "file_name" : "Python-3.3.0.tar.bz2",
-      "urls" : ["http://www.python.org/ftp/python/3.3.0/"],
-      "build_type" : "make",
-      "configure_args" : ["--enable-shared"],
-      "install_check_files" : ["python/bin/python3"],
-      "config_files" : {}
-    }
-  },
+  "packages" : [
+      {
+          "name" : "python",
+          "file_name" : "Python-3.3.0.tar.bz2",
+          "urls" : ["http://www.python.org/ftp/python/3.3.0/"],
+          "build_type" : "make",
+          "configure_args" : ["--enable-shared"],
+          "install_check_files" : ["python/bin/python3"],
+          "config_files" : {}
+      }
+  ],
   "LOGGING" : {
     "version": 1,
     "disable_existing_loggers": true,
