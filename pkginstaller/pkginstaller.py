@@ -4,6 +4,7 @@ import sys
 from pkginstaller.internal.setup_package import SetupPackage
 from pkginstaller.internal.setup_packages import SetupPackages
 
+__version__ = "0.1.0"
 PROJECT_ROOT = os.getenv('PROJECT_ROOT')
 if PROJECT_ROOT == None:
     raise Exception('PROJECT_ROOT environment variable is not set.')
