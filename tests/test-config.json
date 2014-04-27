@@ -1,0 +1,51 @@
+{
+  "packages" : {
+    "python" : {
+      "name" : "python",
+      "file_name" : "Python-3.3.0.tar.bz2",
+      "urls" : ["http://www.python.org/ftp/python/3.3.0/"],
+      "build_type" : "make",
+      "configure_args" : ["--enable-shared"],
+      "install_check_files" : ["python/bin/python3"],
+      "config_files" : {}
+    }
+  },
+  "LOGGING" : {
+    "version": 1,
+    "disable_existing_loggers": true,
+    "formatters": {
+        "verbose": {
+            "format": "[%(levelname)s] [%(asctime)s] [%(module)s] [process - %(process)d] [thread - %(thread)d] [%(message)s]"
+        },
+        "simple": {
+            "format": "[%(levelname)s] [%(message)s]"
+        }
+    },
+    "handlers": {
+        "null": {
+            "level":"DEBUG",
+            "class":"logging.NullHandler"
+        },
+        "console":{
+            "level":"DEBUG",
+            "class":"logging.StreamHandler",
+            "formatter": "simple"
+        },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "verbose",
+            "filename": "./logs/pkginstaller.log",
+            "maxBytes": 1024000,
+            "backupCount": 5
+        }
+    },
+    "loggers": {
+        "wcpgsite.production": {
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": true
+        }
+    }
+  }
+}

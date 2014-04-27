@@ -1,0 +1,9 @@
+.bash_history
+build/*
+content/*
+dist/*
+externals/*
+logs/*
+MANIFEST
+__pycache__/
+*.swp
