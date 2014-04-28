@@ -99,7 +99,7 @@ class SetupPackages:
         return True
 
     def install(self):
-        print('\nINSTALLING PACKAGES...\n')
+        print('\nINSTALLING PACKAGES...')
 
         for package_dict in self._packages_config_list:
             package_obj = SetupPackage(
