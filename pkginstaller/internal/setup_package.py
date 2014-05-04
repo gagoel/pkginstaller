@@ -7,8 +7,6 @@ from pkginstaller.internal.setup_utils import *
 
 logger = logging.getLogger('pkginstaller.setup_package')
 
-PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-
 
 class SetupPackage:
 
@@ -128,7 +126,7 @@ class SetupPackage:
         if self.package_build_type == "distutils":
             get_sitepackage_cmd = \
                 ['python', '-c', 'import site; site.getsitepackages()[0]']
-            stdout, stderr = run_command(get_sitepackage_cmd, PROJECT_ROOT)
+            stdout, stderr = run_command(get_sitepackage_cmd)
             if stderr != "":
                 raise Exception('ERROR - {}'.format(stderr)) 
             self.package_install_path = stdout
@@ -277,7 +275,7 @@ class SetupPackage:
         
         # Verifying installation commands.
         for cmd_array in self.package_installation_verify_cmds:
-            stdout, stderr = run_command(cmd_array[0], PROJECT_ROOT)
+            stdout, stderr = run_command(cmd_array[0])
 
             if stderr != "":
                 logger.info('Command execution failed. Error is %s', stderr)
@@ -308,7 +306,7 @@ class SetupPackage:
         # exists, so using project root
         script_execution_dir = self.package_install_path
         if not os.path.exists(script_execution_dir):
-            script_execution_dir = PROJECT_ROOT
+            script_execution_dir = os.getcwd()
         
         for script in self.package_post_install_scripts:
             logger.info('Executing post install script %s', script)
@@ -319,10 +317,11 @@ class SetupPackage:
         return True
 
     def setup_config_files(self):
-            
+        
+        # Source file and destination file both should be absolute path.
         for source_file, dest_file in self.package_configuration_files.items():
-            source_file_path = os.path.join(PROJECT_ROOT, source_file)
-            dest_file_path = os.path.join(PROJECT_ROOT, dest_file)
+            source_file_path = source_file
+            dest_file_path = dest_file
 
             print(
                 '[COPY] ' + source_file_path + ' to ' + dest_file_path, end=''

@@ -9,11 +9,10 @@ __author__ = "Gaurav Goel"
 __license__ = "None"
 __version__ = "0.1.0"
 
-PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-PACKAGE_CACHE_DEFAULT_DIR = os.path.join(PROJECT_ROOT, "externals/src_repo")
-PACKAGE_EXTRACT_DEFAULT_ROOT = os.path.join(PROJECT_ROOT, "externals/src")
-PACKAGE_BUILD_DEFAULT_ROOT = os.path.join(PROJECT_ROOT, "externals/build")
-PACKAGE_INSTALL_DEFAULT_ROOT = os.path.join(PROJECT_ROOT, "externals/install")
+PACKAGE_CACHE_DEFAULT_DIR = os.path.join(os.getcwd(), "externals/src_repo")
+PACKAGE_EXTRACT_DEFAULT_ROOT = os.path.join(os.getcwd(), "externals/src")
+PACKAGE_BUILD_DEFAULT_ROOT = os.path.join(os.getcwd(), "externals/build")
+PACKAGE_INSTALL_DEFAULT_ROOT = os.path.join(os.getcwd(), "externals/install")
 
 logger = logging.getLogger('pkginstaller.__init__')
 
