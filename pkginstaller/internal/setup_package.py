@@ -5,16 +5,9 @@ import logging
 
 from pkginstaller.internal.setup_utils import *
 
-logger = logging.getLogger('wcpgsite.production.setup_package')
+logger = logging.getLogger('pkginstaller.setup_package')
 
-PROJECT_ROOT = os.getenv('PROJECT_ROOT')
-if PROJECT_ROOT == None:
-    raise Exception('PROJECT_ROOT environment variable is not set.')
-
-PACKAGE_CACHE_DEFAULT_DIR = os.path.join(PROJECT_ROOT, "externals/src_repo")
-PACKAGE_EXTRACT_DEFAULT_ROOT = os.path.join(PROJECT_ROOT, "externals/src")
-PACKAGE_BUILD_DEFAULT_ROOT = os.path.join(PROJECT_ROOT, "externals/build")
-PACKAGE_INSTALL_DEFAULT_ROOT = os.path.join(PROJECT_ROOT, "externals/install")
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
 
 class SetupPackage:
@@ -26,14 +19,9 @@ class SetupPackage:
     urls                   - Package download urls array.
     build_type             - Package build type such as make, distutils.
     
-    cache_directory        - Package cache location, default path is 
-                             $PROJECT_ROOT/externals/src_repo 
-    extract_root           - Package extract directory, default value is
-                             $PROJECT_ROOT/externals/src/
-                             <package-file-name-without-extension>
-    build_root             - Package build directory, default value is
-                             $PROJECT_ROOT/externals/build/
-                             <package-file-name-without-extension>
+    cache_directory        - Package cache location, save after download.
+    extract_root           - Package extract directory.
+    build_root             - Package build directory.
     install_root           - Package install directory.
     
     configure_args         - Package configuration arguments array.
@@ -46,16 +34,18 @@ class SetupPackage:
                              that package has installed correctly or not.
     config_files           - Package configuration files source and 
                              destination dict array. 
-
+    configure_cmd          - package configure command string, if default 
+                             package configure command is not right as per
+                             package build type.
     """
     
     def __init__(
         self,
         package_config_dict,
-        package_cache_default_dir = PACKAGE_CACHE_DEFAULT_DIR,
-        package_extract_default_root = PACKAGE_EXTRACT_DEFAULT_ROOT,
-        package_build_default_root = PACKAGE_BUILD_DEFAULT_ROOT,
-        package_install_default_root = PACKAGE_INSTALL_DEFAULT_ROOT
+        package_cache_default_dir,
+        package_extract_default_root,
+        package_build_default_root,
+        package_install_default_root
     ):
         logger.debug(
             'Package configuration dictionary is %s',
@@ -216,6 +206,9 @@ class SetupPackage:
 
     def replace_package_env_vars(self, replacing_data):
         package_env_dict = {
+            'INSTALL_ROOT_DIR' : self.install_path,
+            'SOURCE_ROOT_DIR' : self.source_path,
+            'BUILD_ROOT_DIR' : self.build_path,
             'PACKAGE_INSTALL_DIR' : self.package_install_path,
             'PACKAGE_SOURCE_DIR' : self.package_source_path,
             'PACKAGE_BUILD_DIR' : self.package_build_path
@@ -251,7 +244,7 @@ class SetupPackage:
                 ))
         
         replaced_data = replacing_data
-        logger.info('Replacing package environment variables')
+        logger.debug('Replacing package environment variables')
         replaced_data = _recursive_replace_env_vars(replaced_data)
          
         logger.debug(

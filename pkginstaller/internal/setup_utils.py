@@ -10,9 +10,10 @@ import logging
 from fcntl import fcntl, F_GETFL, F_SETFL
 from os import O_NONBLOCK, read
 
-logger = logging.getLogger('wcpgsite.production.setup_utils')
+logger = logging.getLogger('pkginstaller.setup_utils')
 
-def download_file(file_name, from_location, to_location):
+
+def download_file(file_name, from_location, to_location, verbose=False):
     """Download file and save it to destination
 
     Args:
@@ -24,8 +25,8 @@ def download_file(file_name, from_location, to_location):
         bool: True if file was successfully downloaded otherwise False
         
     """
-   
-    logger.info(
+  
+    logger.debug(
         'Downloading file %s from location %s to location %s',
         file_name, from_location, to_location
     )
@@ -47,7 +48,7 @@ def download_file(file_name, from_location, to_location):
         total_size = int(total_size)
         bytes_so_far = 0
 
-        logger.info('Total file size is %s', total_size)
+        print('Total file size is {}'.format(total_size))
         write_file_handler = open(write_file_path, "wb")
         while True:
             chunk = response.read(chunk_size)
@@ -58,48 +59,72 @@ def download_file(file_name, from_location, to_location):
             write_file_handler.write(chunk)
             write_file_handler.flush()
 
-            logger.debug(
-                'Writing bytes %s, number of bytes written so far %s',
-                len(chunk), bytes_so_far
-            )
-
             if report_hook:
                 download_file_report(bytes_so_far, chunk_size, total_size)
 
         write_file_handler.close()
-        logger.info('Total bytes written to file is %s', bytes_so_far)
+        print('Total bytes written to file is {}'.format(bytes_so_far))
         return bytes_so_far
     
     from_file_path = os.path.join(from_location, file_name)
     to_file_path = os.path.join(to_location, file_name)
+    if not os.path.exists(to_location):
+        os.makedirs(to_location)
 
     # git cloning. 
     if re.match('.*\.git$', file_name):
         #file_name_without_ext = re.sub('\.git$', '', file_name)
-
-        logger.info(
-            'Cloning git repository %s to location %s',
-            from_file_path, to_location
-        )
-        cloning_cmd = ['git', 'clone', from_file_path, file_name]
+        git_repo_dir = os.path.join(to_file_path, file_name)
+        if os.path.exists(git_repo_dir):
+            print('Git repository exists at {}'.format(git_repo_dir))
+            return True
+        else:
+            print('Git repository does not exist at {}'.format(git_repo_dir))
+            print(
+                'Cloning git repository {} to location {}'.format(
+                from_file_path, to_file_path)
+            )
+       
+        if not os.path.exists(to_file_path):
+            os.makedirs(to_file_path)
+         
+        cloning_cmd = ["git", "clone", from_file_path, file_name]
+        stdout, stderr = run_command(cloning_cmd, to_file_path)
         
-        stdout, stderr = run_command(cloning_cmd, to_location)
-        
-        logger.info('Git Cloning output %s', stdout)
+        print('Git Cloning output {}'.format(stdout))
         if stderr != "":
-            logger.error('Git cloning error %s', stderr)
+            print('Git cloning error {}'.format(stderr))
             return False
         
-        logger.info('Git repository cloned successfully.')    
+        print('Git repository cloned successfully.')    
         return True
 
     # zip, tar.gz, tar.bz2, tar.xz files downloading.
     response = urllib.request.urlopen(from_file_path)
+    
+    # Checking file exists or not.
+    if os.path.exists(to_file_path):
+        print('File exists at {}, checking file size'.format(to_file_path))
+        remote_file_size = response.headers['Content-Length'].strip()
+        statinfo = os.stat(to_file_path)
+        if int(remote_file_size) == statinfo.st_size:
+            print('File size {} matches at remote location, '\
+                'skipping download'.format(remote_file_size)
+            )
+            response.close()
+            return True
+        else:
+            print(
+                'Remote file size {} does not match with local file size {}'. \
+                format(remote_file_size, str(statinfo.st_size))
+            )
+    
     download_file_read(
         to_file_path, response, report_hook=download_file_report
     )
 
-    logger.info('%s file downloaded successfully.', from_file_path)
+    response.close()
+    print('{} file downloaded successfully.'.format(from_file_path))
     return True
 
 def extract_file(file_name, file_source_path, file_dest_path):
@@ -210,7 +235,7 @@ def replace_env_vars(replacing_data):
             )
     
     replaced_data = replacing_data
-    logger.info('Replacing environment variables')
+    logger.debug('Replacing environment variables')
     replaced_data = _recursive_replace_env_vars(replaced_data)
      
     logger.debug(

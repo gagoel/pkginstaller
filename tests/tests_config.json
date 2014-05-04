@@ -1,0 +1,87 @@
+{
+    "test-setup-packages":
+    {
+        "packages": [
+            {
+                "name": "openssl",
+                "file_name": "openssl-1.0.1g.tar.gz",
+                "urls": [
+                    "http://www.openssl.org/source"
+                ],
+                "build_type": "imake",
+                "configure_args": [
+                    "--openssldir=$INSTALL_ROOT_DIR/openssldir",
+                    "shared"
+                ],
+                "install_check_files": [
+                    "openssl/bin/openssl"
+                ],
+                "config_files": {},
+                "configure_cmd": "$PACKAGE_SOURCE_DIR/config"
+            }
+        ]
+    },
+    "test-install-packages":
+    {
+        "packages": [
+            {
+                "name": "openssl",
+                "file_name": "openssl-1.0.1g.tar.gz",
+                "urls": [
+                    "http://www.openssl.org/source"
+                ],
+                "build_type": "imake",
+                "configure_args": [
+                    "--openssldir=$INSTALL_ROOT_DIR/openssldir",
+                    "shared"
+                ],
+                "install_check_files": [
+                    "openssl/bin/openssl"
+                ],
+                "config_files": {},
+                "configure_cmd": "$PACKAGE_SOURCE_DIR/config"
+            }
+        ]
+    },
+    "LOGGING": {
+        "version": 1,
+        "disable_existing_loggers": true,
+        "formatters": {
+            "verbose": {
+                "format": "[%(levelname)s] [%(asctime)s] [%(module)s] [%(message)s]"
+            },
+            "simple": {
+                "format": "[%(levelname)s] [%(message)s]"
+            }
+        },
+        "handlers": {
+            "null": {
+                "level": "INFO",
+                "class": "logging.NullHandler"
+            },
+            "console": {
+                "level": "INFO",
+                "class": "logging.StreamHandler",
+                "formatter": "simple"
+            },
+            "file": {
+                "level": "INFO",
+                "class": "logging.handlers.RotatingFileHandler",
+                "formatter": "verbose",
+                "filename": "./logs/pkginstaller.log",
+                "maxBytes": 1024000,
+                "backupCount": 5
+            }
+        },
+        "loggers": {
+            "pkginstaller": {
+                "handlers": [
+                    "console",
+                    "file"
+                ],
+                "level": "INFO",
+                "propagate": true
+            }
+        }
+    } 
+}

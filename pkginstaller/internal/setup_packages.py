@@ -7,13 +7,7 @@ from pkginstaller.internal.setup_package import SetupPackage
 from pkginstaller.internal.setup_packages_utils import *
 from pkginstaller.internal.setup_utils import *
 
-PROJECT_ROOT = os.getenv('PROJECT_ROOT')
-if PROJECT_ROOT == None:
-    raise Exception('PROJECT_ROOT environment variable is not set.')
-PACKAGES_CACHE_DEFAULT_DIR = os.path.join(PROJECT_ROOT, "externals/src_repo")
-PACKAGES_EXTRACT_DEFAULT_ROOT = os.path.join(PROJECT_ROOT, "externals/src")
-PACKAGES_BUILD_DEFAULT_ROOT = os.path.join(PROJECT_ROOT, "externals/build")
-PACKAGES_INSTALL_DEFAULT_ROOT = os.path.join(PROJECT_ROOT, "externals/install")
+logger = logging.getLogger('pkginstaller.setup_packages')
 
 
 class SetupPackages:
@@ -21,10 +15,10 @@ class SetupPackages:
     def __init__(
         self,
         packages_config_list,
-        packages_cache_default_dir = PACKAGES_CACHE_DEFAULT_DIR,
-        packages_extract_default_root = PACKAGES_EXTRACT_DEFAULT_ROOT,
-        packages_build_default_root = PACKAGES_BUILD_DEFAULT_ROOT,
-        packages_install_default_root = PACKAGES_INSTALL_DEFAULT_ROOT
+        packages_cache_default_dir,
+        packages_extract_default_root,
+        packages_build_default_root,
+        packages_install_default_root
     ):
         self._packages_config_list = packages_config_list
         self._packages_cache_default_dir = packages_cache_default_dir

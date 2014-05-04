@@ -6,7 +6,7 @@ import logging
 
 from pkginstaller.internal.setup_utils import *
 
-logger = logging.getLogger('wcpgsite.production.setup_packages_utils')
+logger = logging.getLogger('pkginstaller.setup_packages_utils')
 
 
 def run_make_configure_cmd(
@@ -78,7 +78,7 @@ def run_make_build(
     pkg_config_cmd, is_cmake=False
 ):
 
-    logger.info(
+    logger.debug(
         'Executing make build \nSource Dir - %s \nBuild Dir - %s\n' \
         'Install Dir - %s\n Configure Args - %s\n Configure cmd - %s',
         pkg_src_dir, pkg_build_dir, pkg_install_dir,
