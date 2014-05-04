@@ -264,14 +264,15 @@ class SetupPackage:
         # Verifying installation files.
         logger.info('Verifying package installed or not %s', self.package_name)
         for installation_file in self.package_installation_verify_files:
-            file_path = os.path.join(
-                self.install_path, installation_file
-            )
-            if not os.path.exists(file_path):
-                logger.info('Installation file ' + file_path + ' not found')
+            if not os.path.exists(installation_file):
+                logger.info(
+                    'Installation file ' + installation_file + ' not found'
+                )
                 return False
             else:
-                logger.info('Installation file ' + file_path + ' found')
+                logger.info(
+                    'Installation file ' + installation_file + ' found'
+                )
         
         # Verifying installation commands.
         for cmd_array in self.package_installation_verify_cmds:
