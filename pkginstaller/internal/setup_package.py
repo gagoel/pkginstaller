@@ -134,7 +134,7 @@ class SetupPackage:
         # Properties which needs to be parsed.
         temp = self.package_download_urls
         temp = self.replace_package_env_vars(temp)
-        temp = self.replace_env_vars(temp)
+        temp = replace_env_vars(temp)
         self.package_download_urls = temp
 
         if 'install_check_files' in package_config_dict.keys(): 
