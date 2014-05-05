@@ -175,7 +175,7 @@ class SetupPackage:
             temp = replace_env_vars(temp)
             self.package_configuration_files = temp
         else:
-            self.package_configuration_files = {}
+            self.package_configuration_files = []
         
         if 'pre_install_scripts' in package_config_dict.keys(): 
             temp = package_config_dict['pre_install_scripts']
@@ -343,9 +343,9 @@ class SetupPackage:
     def setup_config_files(self):
         
         # Source file and destination file both should be absolute path.
-        for source_file, dest_file in self.package_configuration_files.items():
-            source_file_path = source_file
-            dest_file_path = dest_file
+        for source_dest_files in self.package_configuration_files:
+            source_file_path = source_dest_files[0]
+            dest_file_path = source_dest_files[1]
 
             print(
                 '[COPY] ' + source_file_path + ' to ' + dest_file_path, end=''
