@@ -330,3 +330,16 @@ def wget_ftp_download(host, username, password, srcdir, destdir):
         logger.info('FTP download was successful.')
 
     return True
+
+def apply_patch(patch_file, dest_dir):
+    if not os.path.exists(patch_file):
+        raise Exception('patch file %s does not exists', patch_file)
+
+    cmd = ["patch", "-p1", "< " + patch_file]
+    stdout, stderr = run_command(cmd, dest_dir)
+
+    if stderr != "":
+        raise Exception(
+            'patch %s execution failed from %s directory',
+            patch_file, dest_dir
+        )

@@ -131,6 +131,12 @@ class SetupPackage:
                 raise Exception('ERROR - {}'.format(stderr)) 
             self.package_install_path = stdout
 
+        # Properties which needs to be parsed.
+        temp = self.package_download_urls
+        temp = self.replace_package_env_vars(temp)
+        temp = self.replace_env_vars(temp)
+        self.package_download_urls = temp
+
         if 'install_check_files' in package_config_dict.keys(): 
             temp = package_config_dict['install_check_files']
             temp = self.replace_package_env_vars(temp)
@@ -147,6 +153,55 @@ class SetupPackage:
         else:
             self.package_installation_verify_cmds = []
 
+        if 'configure_args' in package_config_dict.keys(): 
+            temp = package_config_dict['configure_args']
+            temp = self.replace_package_env_vars(temp)
+            temp = replace_env_vars(temp)
+            self.package_configure_args = temp
+        else:
+            self.package_configure_args = []
+        
+        if 'configure_cmd' in package_config_dict.keys(): 
+            temp = package_config_dict['configure_cmd']
+            temp = self.replace_package_env_vars(temp)
+            temp = replace_env_vars(temp)
+            self.package_configure_cmd = temp
+        else:
+            self.package_configure_cmd = ""
+        
+        if 'config_files' in package_config_dict.keys(): 
+            temp = package_config_dict['config_files']
+            temp = self.replace_package_env_vars(temp)
+            temp = replace_env_vars(temp)
+            self.package_configuration_files = temp
+        else:
+            self.package_configuration_files = {}
+        
+        if 'pre_install_scripts' in package_config_dict.keys(): 
+            temp = package_config_dict['pre_install_scripts']
+            temp = self.replace_package_env_vars(temp)
+            temp = replace_env_vars(temp)
+            self.package_pre_install_scripts = temp
+        else:
+            self.package_pre_install_scripts = []
+        
+        if 'post_install_scripts' in package_config_dict.keys(): 
+            temp = package_config_dict['post_install_scripts']
+            temp = self.replace_package_env_vars(temp)
+            temp = replace_env_vars(temp)
+            self.package_post_install_scripts = temp
+        else:
+            self.package_post_install_scripts = []
+        
+        if 'patches' in package_config_dict.keys(): 
+            temp = package_config_dict['patches']
+            temp = self.replace_package_env_vars(temp)
+            temp = replace_env_vars(temp)
+            self.package_patches = temp
+        else:
+            self.package_patches = []
+       
+        # Checking install_check_files and install_check_cmds.
         if self.package_installation_verify_files == [] and \
             self.package_installation_verify_cmds == []:
             raise ValueError(
@@ -155,38 +210,6 @@ class SetupPackage:
                 'condition to check package installation'
             )
 
-        self.package_configuration_files = \
-            package_config_dict.get('config_files', {})
-        self.package_pre_install_scripts = \
-            package_config_dict.get('pre_install_scripts', [])
-        self.package_post_install_scripts = \
-            package_config_dict.get('post_install_scripts', [])
-        self.package_patches = \
-            package_config_dict.get('patches', [])
- 
-
-        # Replacing environment variables in configuration options.
-        self.package_configure_args = \
-            package_config_dict.get('configure_args', [])
-        self.package_configure_args = self.replace_package_env_vars(
-            self.package_configure_args
-        )
-        self.package_configure_args = replace_env_vars(
-            self.package_configure_args
-        )
-     
-        # If package configure does not match with build type default command.
-        if 'configure_cmd' in package_config_dict.keys():
-            self.package_configure_cmd = package_config_dict['configure_cmd']
-            self.package_configure_cmd = self.replace_package_env_vars(
-                self.package_configure_cmd
-            )
-            self.package_configure_cmd = replace_env_vars(
-                self.package_configure_cmd
-            )
-        else:
-            self.package_configure_cmd = ""
-      
         # Create required directories if does not exists.
         self._create_dirs(self.source_repo)
         self._create_dirs(self.source_path)
