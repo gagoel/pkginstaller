@@ -75,7 +75,7 @@ def run_make_install_cmd(build_dir):
 
 def run_make_build(
     pkg_src_dir, pkg_build_dir, pkg_install_dir, pkg_config_args,
-    pkg_config_cmd, package_patches=[], is_cmake=False
+    pkg_config_cmd="", package_patches=[], is_cmake=False
 ):
 
     logger.debug(
