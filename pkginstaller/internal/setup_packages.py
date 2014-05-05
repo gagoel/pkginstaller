@@ -134,7 +134,7 @@ class SetupPackages:
                     package_obj.package_install_path,
                     package_obj.package_configure_args,
                     package_obj.package_configure_cmd,
-                    package_obj.package_patches
+                    package_patches=package_obj.package_patches
                 )
             elif package_obj.package_build_type == "cmake":
                 if not os.path.exists(package_obj.package_build_path):
@@ -145,13 +145,13 @@ class SetupPackages:
                     package_obj.package_build_path,
                     package_obj.package_install_path,
                     package_obj.package_configure_args,
-                    package_obj.package_patches,
+                    package_patches=package_obj.package_patches,
                     is_cmake=True
                 )
             elif package_obj.package_build_type == "distutils":
                 status = run_distutils_build(
                     package_obj.package_source_path,
-                    pacakge_obj.package_patches
+                    package_patches=pacakge_obj.package_patches
                 )
             else:
                 raise Exception(

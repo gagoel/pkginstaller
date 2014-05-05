@@ -75,7 +75,7 @@ def run_make_install_cmd(build_dir):
 
 def run_make_build(
     pkg_src_dir, pkg_build_dir, pkg_install_dir, pkg_config_args,
-    pkg_config_cmd, pkg_patches, is_cmake=False
+    pkg_config_cmd, package_patches=[], is_cmake=False
 ):
 
     logger.debug(
@@ -86,7 +86,7 @@ def run_make_build(
     )
     
     # Applying patches
-    for patch in pkg_patches:
+    for patch in package_patches:
         apply_patch(patch, pkg_src_dir)
     
     # Configuring package.
@@ -123,9 +123,9 @@ def run_make_build(
 
     return True
 
-def run_distutils_build(pkg_source_path, pkg_patches):
+def run_distutils_build(pkg_source_path, package_patches=[]):
     # Applying patches
-    for patch in pkg_patches:
+    for patch in package_patches:
         apply_patch(patch, pkg_source_path)
 
     # distutils installation.
