@@ -48,7 +48,7 @@ def download_file(file_name, from_location, to_location, verbose=False):
         total_size = int(total_size)
         bytes_so_far = 0
 
-        print('Total file size is {}'.format(total_size))
+        logger.debug('Total file size is %s', total_size)
         write_file_handler = open(write_file_path, "wb")
         while True:
             chunk = response.read(chunk_size)
@@ -63,7 +63,7 @@ def download_file(file_name, from_location, to_location, verbose=False):
                 download_file_report(bytes_so_far, chunk_size, total_size)
 
         write_file_handler.close()
-        print('Total bytes written to file is {}'.format(bytes_so_far))
+        logger.debug('Total bytes written to file is %s', bytes_so_far)
         return bytes_so_far
     
     from_file_path = os.path.join(from_location, file_name)
