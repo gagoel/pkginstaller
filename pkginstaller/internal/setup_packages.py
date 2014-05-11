@@ -151,7 +151,7 @@ class SetupPackages:
             elif package_obj.package_build_type == "distutils":
                 status = run_distutils_build(
                     package_obj.package_source_path,
-                    package_patches=pacakge_obj.package_patches
+                    package_patches=package_obj.package_patches
                 )
             else:
                 raise Exception(
