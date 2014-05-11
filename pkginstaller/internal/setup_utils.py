@@ -73,23 +73,18 @@ def download_file(file_name, from_location, to_location, verbose=False):
 
     # git cloning. 
     if re.match('.*\.git$', file_name):
-        #file_name_without_ext = re.sub('\.git$', '', file_name)
-        git_repo_dir = os.path.join(to_file_path, file_name)
-        if os.path.exists(git_repo_dir):
-            print('Git repository exists at {}'.format(git_repo_dir))
+        if os.path.exists(to_file_path):
+            print('Git repository exists at {}'.format(to_file_path))
             return True
         else:
-            print('Git repository does not exist at {}'.format(git_repo_dir))
+            print('Git repository does not exist at {}'.format(to_file_path))
             print(
                 'Cloning git repository {} to location {}'.format(
                 from_file_path, to_file_path)
             )
-       
-        if not os.path.exists(to_file_path):
-            os.makedirs(to_file_path)
          
         cloning_cmd = ["git", "clone", from_file_path, file_name]
-        stdout, stderr = run_command(cloning_cmd, to_file_path)
+        stdout, stderr = run_command(cloning_cmd, to_location)
         
         print('Git Cloning output {}'.format(stdout))
         if stderr != "":
