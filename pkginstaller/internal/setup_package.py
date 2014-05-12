@@ -124,8 +124,9 @@ class SetupPackage:
             self.install_path, self.package_name
         )
         if self.package_build_type == "distutils":
-            get_sitepackage_cmd = \
-                ['python', '-c', 'import site; site.getsitepackages()[0]']
+            get_sitepackage_cmd = ['python', '-c',
+                'import site; print(site.getsitepackages()[0])'
+            ]
             stdout, stderr = run_command(get_sitepackage_cmd)
             if stderr != "":
                 raise Exception('ERROR - {}'.format(stderr)) 
