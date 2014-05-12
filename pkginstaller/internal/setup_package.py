@@ -130,7 +130,7 @@ class SetupPackage:
             stdout, stderr = run_command(get_sitepackage_cmd)
             if stderr != "":
                 raise Exception('ERROR - {}'.format(stderr)) 
-            self.package_install_path = stdout
+            self.package_install_path = stdout.strip()
 
         # Properties which needs to be parsed.
         temp = self.package_download_urls
