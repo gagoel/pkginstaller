@@ -10,7 +10,16 @@ logger = logging.getLogger('pkginstaller.setup_packages_utils')
 
 
 def run_make_configure_cmd(
-    src_dir, build_dir, install_dir, configure_args, configure_cmd
+    src_dir,
+    build_dir,
+    install_dir,
+    configure_args,
+    configure_cmd,
+    remote_host = "localhost",
+    remote_ssh_port = 22,
+    remote_ssh_user = None,
+    remote_ssh_pass = None,
+    verbose = 0
 ):
     optional_argument = configure_args
     configure_file = configure_cmd
@@ -20,62 +29,140 @@ def run_make_configure_cmd(
     configure_cmd = [configure_file, '--prefix=' + install_dir]
     configure_cmd.extend(optional_argument)
 
-    print('[MAKE] Configuration package...')
-    stdout, stderr = run_command(configure_cmd, build_dir)
-    if stderr == "":
-        print('[MAKE] Configuration was successed.')
+    if verbose > 0:
+        print('[MAKE] Configuration package...')
+    stdout, stderr = run_command(
+        configure_cmd,
+        build_dir,
+        remote_host=remote_host,
+        remote_ssh_port=remote_ssh_port,
+        remote_ssh_user=remote_ssh_user,
+        remote_ssh_pass=remote_ssh_pass,
+        verbose=verbose
+    )
+    if "error " in stderr or "Error " in stderr or "ERROR " in stderr:
+        if verbose > 0:
+            print('[MAKE] Configuration was failed.')
+        print('Error  {}'.format(stderr))
+        return False
+    else:
+        if verbose > 0:
+            print('[MAKE] Configuration was successed.')
         logger.debug('Configuration output %s', stdout)
         return True
-    else:
-        print('[MAKE] Configuration was failed.')
-        print('Error {}'.format(stderr))
-        return False
 
-def run_cmake_configure_cmd(src_dir, build_dir, install_dir, configure_args):
+def run_cmake_configure_cmd(
+    src_dir,
+    build_dir,
+    install_dir,
+    configure_args,
+    remote_host = "localhost",
+    remote_ssh_port = 22,
+    remote_ssh_user = None,
+    remote_ssh_pass = None,
+    verbose = 0
+):
     optional_argument = configure_args
 
     configure_cmd = ['cmake', src_dir, '-DCMAKE_INSTALL_PREFIX=' + \
         install_dir]
     configure_cmd.extend(optional_argument)
 
-    print('[CMAKE] Configuration package...')
-    stdout, stderr = run_command(configure_cmd, build_dir)
-    if stderr == "":
-        print('[CMAKE] Configuration was successed.')
+    if verbose > 0:
+        print('[CMAKE] Configuration package...')
+    stdout, stderr = run_command(
+        configure_cmd,
+        build_dir,
+        remote_host=remote_host,
+        remote_ssh_port=remote_ssh_port,
+        remote_ssh_user=remote_ssh_user,
+        remote_ssh_pass=remote_ssh_pass,
+        verbose=verbose
+    )
+    if "error " in stderr or "Error " in stderr or "ERROR " in stderr:
+        if verbose > 0:
+            print('[CMAKE] Configuration was failed.')
+        print('Error  {}'.format(stderr))
+        return False
+    else:
+        if verbose > 0:
+            print('[CMAKE] Configuration was successed.')
         logger.debug('Configuration output %s', stdout)
         return True
-    else:
-        print('[CMAKE] Configuration was failed.')
-        print('Error {}'.format(stderr))
-        return False
 
-def run_make_build_cmd(build_dir):
+def run_make_build_cmd(
+    build_dir,
+    remote_host = "localhost",
+    remote_ssh_port = 22,
+    remote_ssh_user = None,
+    remote_ssh_pass = None,
+    verbose = 0 
+):
     build_cmd = ['make']
-    print('[MAKE] Building package...')
-    stdout, stderr = run_command(build_cmd, build_dir)
-    if stderr == "":
-        print('[MAKE] Build was successed.')
-        return True
-    else:
-        print('[MAKE] Build was failed.')
-        print('Error {}'.format(stderr))
+    if verbose > 0:
+        print('[MAKE] Building package...')
+    stdout, stderr = run_command(
+        build_cmd,
+        build_dir,
+        remote_host=remote_host,
+        remote_ssh_port=remote_ssh_port,
+        remote_ssh_user=remote_ssh_user,
+        remote_ssh_pass=remote_ssh_pass,
+        verbose=verbose
+    )
+    if "error " in stderr or "Error " in stderr or "ERROR " in stderr:
+        if verbose > 0:
+            print('[MAKE] Build was failed.')
+        print('Error  {}'.format(stderr))
         return False
+    else:
+        if verbose > 0:
+            print('[MAKE] Build was successed.')
+        return True
 
-def run_make_install_cmd(build_dir):
+def run_make_install_cmd(
+    build_dir,
+    remote_host = "localhost",
+    remote_ssh_port = 22,
+    remote_ssh_user = None,
+    remote_ssh_pass = None,
+    verbose = 0
+):
     install_cmd = ['make', 'install']
-    print('[MAKE] Installing package...')
-    stdout, stderr = run_command(install_cmd, build_dir)
-    if stderr == "":
-        print('[MAKE] Installation was successed.')
-        return True
-    else:
-        print('[MAKE] Installation was failed.')
-        print('Error {}'.format(stderr))
+    if verbose > 0:
+        print('[MAKE] Installing package...')
+    stdout, stderr = run_command(
+        install_cmd,
+        build_dir,
+        remote_host=remote_host,
+        remote_ssh_port=remote_ssh_port,
+        remote_ssh_user=remote_ssh_user,
+        remote_ssh_pass=remote_ssh_pass,
+        verbose=verbose
+    )
+    if "error " in stderr or "Error " in stderr or "ERROR " in stderr:
+        if verbose > 0:
+            print('[MAKE] Installation was failed.')
+        print('Error  {}'.format(stderr))
         return False
+    else:
+        if verbose > 0:
+            print('[MAKE] Installation was successed.')
+        return True
 
 def run_make_build(
-    pkg_src_dir, pkg_build_dir, pkg_install_dir, pkg_config_args,
-    pkg_config_cmd="", package_patches=[], is_cmake=False
+    pkg_src_dir, 
+    pkg_build_dir, 
+    pkg_install_dir, 
+    pkg_config_args,
+    pkg_config_cmd="", 
+    package_patches=[], 
+    is_cmake=False,
+    remote_host = "localhost",
+    remote_ssh_port = 22,
+    remote_ssh_user = None,
+    remote_ssh_pass = None,
+    verbose = 0
 ):
 
     logger.debug(
@@ -87,7 +174,15 @@ def run_make_build(
     
     # Applying patches
     for patch in package_patches:
-        apply_patch(patch, pkg_src_dir)
+        apply_patch(
+            patch,
+            pkg_src_dir,
+            remote_host=remote_host,
+            remote_ssh_port=remote_ssh_port,
+            remote_ssh_user=remote_ssh_user,
+            remote_ssh_pass=remote_ssh_pass,
+            verbose=verbose
+        )
     
     # Configuring package.
     status = False
@@ -96,7 +191,12 @@ def run_make_build(
             pkg_src_dir,
             pkg_build_dir,
             pkg_install_dir,
-            pkg_config_args
+            pkg_config_args,
+            remote_host=remote_host,
+            remote_ssh_port=remote_ssh_port,
+            remote_ssh_user=remote_ssh_user,
+            remote_ssh_pass=remote_ssh_pass,
+            verbose=verbose
         )
     else:
         status = run_make_configure_cmd(
@@ -104,39 +204,88 @@ def run_make_build(
             pkg_build_dir,
             pkg_install_dir,
             pkg_config_args,
-            pkg_config_cmd
+            pkg_config_cmd,
+            remote_host=remote_host,
+            remote_ssh_port=remote_ssh_port,
+            remote_ssh_user=remote_ssh_user,
+            remote_ssh_pass=remote_ssh_pass,
+            verbose=verbose
         )
 
     if status == False:
-        print('Package configuration failed.')
+        if verbose > 0:
+            print('Package configuration failed.')
         return False 
 
     # Building package.
-    if run_make_build_cmd(pkg_build_dir) == False:
-        print('Building package failed.')
+    if run_make_build_cmd(
+        pkg_build_dir,
+        remote_host=remote_host,
+        remote_ssh_port=remote_ssh_port,
+        remote_ssh_user=remote_ssh_user,
+        remote_ssh_pass=remote_ssh_pass,
+        verbose=verbose
+    ) == False:
+        if verbose > 0:
+            print('Building package failed.')
         return False
 
     # Installing package.
-    if run_make_install_cmd(pkg_build_dir) == False:
-        print('Installing package failed.')
+    if run_make_install_cmd(
+        pkg_build_dir,
+        remote_host=remote_host,
+        remote_ssh_port=remote_ssh_port,
+        remote_ssh_user=remote_ssh_user,
+        remote_ssh_pass=remote_ssh_pass,
+        verbose=verbose
+    ) == False:
+        if verbose > 0:
+            print('Installing package failed.')
         return False
 
     return True
 
-def run_distutils_build(pkg_source_path, package_patches=[]):
+def run_distutils_build(
+    pkg_source_path, 
+    package_patches=[],
+    remote_host = "localhost",
+    remote_ssh_port = 22,
+    remote_ssh_user = None,
+    remote_ssh_pass = None,
+    verbose = 0
+):
     # Applying patches
     for patch in package_patches:
-        apply_patch(patch, pkg_source_path)
+        apply_patch(
+            patch,
+            pkg_source_path,
+            remote_host=remote_host,
+            remote_ssh_port=remote_ssh_port,
+            remote_ssh_user=remote_ssh_user,
+            remote_ssh_pass=remote_ssh_pass,
+            verbose=verbose
+        )
 
     # distutils installation.
     install_cmd = ['python', 'setup.py', 'install']
 
-    print('[DISTUTILS] Installing package...')
-    stdout, stderr = run_command(install_cmd, pkg_source_path)
-    if stderr == "":
-        print('[DISTUTILS] Installation was successed.')
-        return True
-    else:
-        print('[DISTUTILS] Installation was failed.')
-        print('Error {}'.format(stderr))
+    if verbose > 0:
+        print('[DISTUTILS] Installing package...')
+    stdout, stderr = run_command(
+        install_cmd,
+        pkg_source_path,
+        remote_host=remote_host,
+        remote_ssh_port=remote_ssh_port,
+        remote_ssh_user=remote_ssh_user,
+        remote_ssh_pass=remote_ssh_pass,
+        verbose=verbose
+    )
+    if "error " in stderr or "Error " in stderr or "ERROR " in stderr:
+        if verbose > 0:
+            print('[DISTUTILS] Installation was failed.')
+        print('Error  {}'.format(stderr))
         return False
+    else:
+        if verbose > 0:
+            print('[DISTUTILS] Installation was successed.')
+        return True

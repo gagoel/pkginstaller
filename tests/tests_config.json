@@ -6,6 +6,7 @@
                 "name": "openssl",
                 "file_name": "openssl-1.0.1g.tar.gz",
                 "urls": [
+                    "file:///$DEV_SERVER_PUBLIC_REPO_ROOT/test_packages_repo/openssl/1.0.1g",
                     "http://www.openssl.org/source"
                 ],
                 "build_type": "imake",
@@ -14,7 +15,7 @@
                     "shared"
                 ],
                 "install_check_files": [
-                    "openssl/bin/openssl"
+                    "$PACKAGE_INSTALL_DIR/bin/openssl"
                 ],
                 "config_files": {},
                 "configure_cmd": "$PACKAGE_SOURCE_DIR/config"
@@ -28,6 +29,7 @@
                 "name": "openssl",
                 "file_name": "openssl-1.0.1g.tar.gz",
                 "urls": [
+                    "file:///$DEV_SERVER_PUBLIC_REPO_ROOT/openssl/1.0.1g",
                     "http://www.openssl.org/source"
                 ],
                 "build_type": "imake",
@@ -36,7 +38,7 @@
                     "shared"
                 ],
                 "install_check_files": [
-                    "openssl/bin/openssl"
+                    "$PACKAGE_INSTALL_DIR/bin/openssl"
                 ],
                 "config_files": {},
                 "configure_cmd": "$PACKAGE_SOURCE_DIR/config"
@@ -60,12 +62,12 @@
                 "class": "logging.NullHandler"
             },
             "console": {
-                "level": "INFO",
+                "level": "WARN",
                 "class": "logging.StreamHandler",
                 "formatter": "simple"
             },
             "file": {
-                "level": "INFO",
+                "level": "DEBUG",
                 "class": "logging.handlers.RotatingFileHandler",
                 "formatter": "verbose",
                 "filename": "./logs/pkginstaller.log",
@@ -79,7 +81,7 @@
                     "console",
                     "file"
                 ],
-                "level": "INFO",
+                "level": "DEBUG",
                 "propagate": true
             }
         }

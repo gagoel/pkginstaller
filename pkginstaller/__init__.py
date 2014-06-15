@@ -35,7 +35,13 @@ def install_package(
     package_pre_install_scripts = [],
     package_post_install_scripts = [],
     package_configuration_files = {},
-    package_configure_cmd = "$PACKAGE_SOURCE_DIR/config"
+    package_configure_cmd = "$PACKAGE_SOURCE_DIR/config",
+
+    remote_host = "localhost",
+    remote_ssh_port = 22,
+    remote_ssh_user = None,
+    remote_ssh_pass = None,
+    verbose = 0
 ):   
     # constructing configuration dictionary    
     pkg_config_dict = {
@@ -64,7 +70,12 @@ def install_package(
         package_cache_directory,
         package_extract_root_directory,
         package_build_root_directory,
-        package_install_root_directory
+        package_install_root_directory,
+        remote_host=remote_host,
+        remote_ssh_port=remote_ssh_port,
+        remote_ssh_user=remote_ssh_user,
+        remote_ssh_pass=remote_ssh_pass,
+        verbose=verbose
     )
 
     setup_packages.download()
@@ -79,13 +90,23 @@ def install_packages(
     packages_extract_default_root = PACKAGE_EXTRACT_DEFAULT_ROOT,
     packages_build_default_root = PACKAGE_BUILD_DEFAULT_ROOT,
     packages_install_default_root = PACKAGE_INSTALL_DEFAULT_ROOT,
+    remote_host="localhost",
+    remote_ssh_port = 22,
+    remote_ssh_user = None,
+    remote_ssh_pass = None,
+    verbose = 0
 ):
     setup_packages = SetupPackages(
         packages_configuration_list,
         packages_cache_default_dir,
         packages_extract_default_root,
         packages_build_default_root,
-        packages_install_default_root
+        packages_install_default_root,
+        remote_host=remote_host,
+        remote_ssh_port=remote_ssh_port,
+        remote_ssh_user=remote_ssh_user,
+        remote_ssh_pass=remote_ssh_pass,
+        verbose=verbose
     )
 
     setup_packages.download()

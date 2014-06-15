@@ -43,13 +43,24 @@ class SetupPackage:
         package_cache_default_dir,
         package_extract_default_root,
         package_build_default_root,
-        package_install_default_root
+        package_install_default_root,
+        remote_host="localhost",
+        remote_ssh_port=22,
+        remote_ssh_user=None,
+        remote_ssh_pass=None,
+        verbose=0
     ):
         logger.debug(
             'Package configuration dictionary is %s',
             package_config_dict
         )
         
+        self.remote_host = remote_host
+        self.remote_ssh_port = remote_ssh_port
+        self.remote_ssh_user = remote_ssh_user
+        self.remote_ssh_pass = remote_ssh_pass
+        self.verbose = verbose
+       
         if not 'name' in package_config_dict.keys():
             raise ValueError(
                 'Package configuration dictionary missing "name" key which ' \
@@ -127,7 +138,13 @@ class SetupPackage:
             get_sitepackage_cmd = ['python', '-c',
                 'import site; print(site.getsitepackages()[0])'
             ]
-            stdout, stderr = run_command(get_sitepackage_cmd)
+            stdout, stderr = run_command(
+                get_sitepackage_cmd,
+                remote_host=self.remote_host,
+                remote_ssh_port=self.remote_ssh_port,
+                remote_ssh_user=self.remote_ssh_user,
+                remote_ssh_pass=self.remote_ssh_pass
+            )
             if stderr != "":
                 raise Exception('ERROR - {}'.format(stderr)) 
             self.package_install_path = stdout.strip()
@@ -278,17 +295,32 @@ class SetupPackage:
         return replaced_data
     
     def is_package_exists(self):
-        logger.info('Verifying package exists or not %s', self.package_name)
-        if os.path.exists(self.package_source_repo):
+        logger.info('Verifying package exists or not - %s', self.package_name)
+        if is_path_exists(
+            self.package_source_repo,
+            remote_host=self.remote_host,
+            remote_ssh_port=self.remote_ssh_port,
+            remote_ssh_user=self.remote_ssh_user,
+            remote_ssh_pass=self.remote_ssh_pass,
+            verbose=self.verbose
+        ):
             return True
         else:
             return False
 
     def is_package_installed(self):
         # Verifying installation files.
-        logger.info('Verifying package installed or not %s', self.package_name)
+        logger.info('Verifying package installed or not - %s',
+            self.package_name)
         for installation_file in self.package_installation_verify_files:
-            if not os.path.exists(installation_file):
+            if not is_path_exists(
+                installation_file,
+                remote_host=self.remote_host,
+                remote_ssh_port=self.remote_ssh_port,
+                remote_ssh_user=self.remote_ssh_user,
+                remote_ssh_pass=self.remote_ssh_pass,
+                verbose=self.verbose
+            ):
                 logger.info(
                     'Installation file ' + installation_file + ' not found'
                 )
@@ -300,7 +332,14 @@ class SetupPackage:
         
         # Verifying installation commands.
         for cmd_array in self.package_installation_verify_cmds:
-            stdout, stderr = run_command(cmd_array[0])
+            stdout, stderr = run_command(
+                cmd_array[0],
+                remote_host=self.remote_host,
+                remote_ssh_port=self.remote_ssh_port,
+                remote_ssh_user=self.remote_ssh_user,
+                remote_ssh_pass=self.remote_ssh_pass,
+                verbose=self.verbose
+            )
 
             if stderr != "":
                 logger.info('Command execution failed. Error is %s', stderr)
@@ -330,7 +369,14 @@ class SetupPackage:
         # If package build type is distutils then install directory will not
         # exists, so using project root
         script_execution_dir = self.package_install_path
-        if not os.path.exists(script_execution_dir):
+        if not is_path_exists(
+            script_execution_dir,
+            remote_host=self.remote_host,
+            remote_ssh_port=self.remote_ssh_port,
+            remote_ssh_user=self.remote_ssh_user,
+            remote_ssh_pass=self.remote_ssh_pass,
+            verbose=self.verbose
+        ):
             script_execution_dir = os.getcwd()
         
         for script in self.package_post_install_scripts:
@@ -348,16 +394,40 @@ class SetupPackage:
             source_file_path = source_dest_files[0]
             dest_file_path = source_dest_files[1]
 
-            print(
-                '[COPY] ' + source_file_path + ' to ' + dest_file_path, end=''
-            )
+            if self.verbose > 0:
+                print(
+                    '[COPY] ' + source_file_path + ' to ' + dest_file_path,
+                    end=''
+                )
 
-            if not os.path.exists(source_file_path):
-                print('  [FAILED]')
+            if not is_path_exists(
+                source_file_path,
+                remote_host=self.remote_host,
+                remote_ssh_port=self.remote_ssh_port,
+                remote_ssh_user=self.remote_ssh_user,
+                remote_ssh_pass=self.remote_ssh_pass,
+                verbose=self.verbose
+            ):
+                if self.verbose > 0:
+                    print('  [FAILED]')
                 return False
 
-            if not os.path.exists(os.path.dirname(dest_file_path)):
-                os.makedirs(os.path.dirname(dest_file_path))
+            if not is_path_exists(
+                os.path.dirname(dest_file_path),
+                remote_host=self.remote_host,
+                remote_ssh_port=self.remote_ssh_port,
+                remote_ssh_user=self.remote_ssh_user,
+                remote_ssh_pass=self.remote_ssh_pass,
+                verbose=self.verbose
+            ):
+                mkdirs(
+                    os.path.dirname(dest_file_path),
+                    remote_host=self.remote_host,
+                    remote_ssh_port=self.remote_ssh_port,
+                    remote_ssh_user=self.remote_ssh_user,
+                    remote_ssh_pass=self.remote_ssh_pass,
+                    verbose=self.verbose
+                )
 
             with open(source_file_path, 'r') as source_fd:
                 with open(dest_file_path, 'w+') as dest_fd:
@@ -367,19 +437,43 @@ class SetupPackage:
                     )
                     source_file_data = replace_env_vars(source_file_data)
                     dest_fd.write(source_file_data)
-            print('  [PASSED]')
+            if self.verbose > 0:
+                print('  [PASSED]')
 
         return True
     
     def _create_dirs(self, dir_path):
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path)
+        if not is_path_exists(
+            dir_path,
+            remote_host=self.remote_host,
+            remote_ssh_port=self.remote_ssh_port,
+            remote_ssh_user=self.remote_ssh_user,
+            remote_ssh_pass=self.remote_ssh_pass,
+            verbose=self.verbose
+        ):
+            mkdirs(
+                dir_path,
+                remote_host=self.remote_host,
+                remote_ssh_port=self.remote_ssh_port,
+                remote_ssh_user=self.remote_ssh_user,
+                remote_ssh_pass=self.remote_ssh_pass,
+                verbose=self.verbose
+            )
 
     def _run_script(self, script_file, script_execution_dir):
-        print('[SCRIPT] ' + script_file, end='')
+        if self.verbose > 0:
+            print('[SCRIPT] ' + script_file, end='')
 
-        if not os.path.exists(script_file):
-            print('  [NOT FOUND]')
+        if not is_path_exists(
+            script_file,
+            remote_host=self.remote_host,
+            remote_ssh_port=self.remote_ssh_port,
+            remote_ssh_user=self.remote_ssh_user,
+            remote_ssh_pass=self.remote_ssh_pass,
+            verbose=self.verbose
+        ):
+            if self.verbose > 0:
+                print('  [NOT FOUND]')
             return True
 
         # Read script file, replace environment variables and write it to temp 
@@ -400,12 +494,29 @@ class SetupPackage:
                 write_file.write(read_file_data)
 
         script_bash_cmd = ['bash', script_temp_file]
-        stdout, stderr = run_command(script_bash_cmd, script_execution_dir)
-        os.remove(script_temp_file)
+        stdout, stderr = run_command(
+            script_bash_cmd,
+            script_execution_dir,
+            remote_host=self.remote_host,
+            remote_ssh_port=self.remote_ssh_port,
+            remote_ssh_user=self.remote_ssh_user,
+            remote_ssh_pass=self.remote_ssh_pass,
+            verbose=self.verbose
+        )
+        remove_file(
+            script_temp_file,
+            remote_host=self.remote_host,
+            remote_ssh_port=self.remote_ssh_port,
+            remote_ssh_user=self.remote_ssh_user,
+            remote_ssh_pass=self.remote_ssh_pass,
+            verbose=self.verbose 
+        )
         
         if stderr == "":
-            print('  [EXECUTION PASSED]')
+            if self.verbose > 0:
+                print('  [EXECUTION PASSED]')
             return True
         else:
-            print('  [EXECUTION FAILED] Error is {}'.format(stderr))
+            if self.verbose > 0:
+                print('  [EXECUTION FAILED] Error is {}'.format(stderr))
             return False

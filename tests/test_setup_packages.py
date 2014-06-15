@@ -8,6 +8,7 @@ import shutil
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/../pkginstaller'))
 
 from pkginstaller.internal.setup_packages import SetupPackages
+from tests import VERBOSE
 
 class TestSetupPackages(unittest.TestCase):
    
@@ -47,6 +48,7 @@ class TestSetupPackages(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         shutil.rmtree(cls.temp_dir)
+        logging.shutdown()
 
     def test_download(self):
         setup_pkg_config_list = \
@@ -61,7 +63,8 @@ class TestSetupPackages(unittest.TestCase):
             pkg_cache_dir,
             pkg_extract_root_dir,
             pkg_build_root_dir,
-            pkg_install_root_dir
+            pkg_install_root_dir,
+            verbose=VERBOSE
         )
         setup_packages_obj.download()
     
@@ -78,7 +81,8 @@ class TestSetupPackages(unittest.TestCase):
             pkg_cache_dir,
             pkg_extract_root_dir,
             pkg_build_root_dir,
-            pkg_install_root_dir
+            pkg_install_root_dir,
+            verbose=VERBOSE
         )
         setup_packages_obj.extract()
     
@@ -95,7 +99,8 @@ class TestSetupPackages(unittest.TestCase):
             pkg_cache_dir,
             pkg_extract_root_dir,
             pkg_build_root_dir,
-            pkg_install_root_dir
+            pkg_install_root_dir,
+            verbose=VERBOSE
         )
         setup_packages_obj.install()
 
